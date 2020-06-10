@@ -7,14 +7,15 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
+import jpabook.model.entity.Address;
 import jpabook.model.entity.Category;
 import jpabook.model.entity.Delivery;
-import jpabook.model.entity.DeliveryStatus;
-import jpabook.model.entity.Item;
 import jpabook.model.entity.Member;
 import jpabook.model.entity.Order;
 import jpabook.model.entity.OrderItem;
-import jpabook.model.entity.OrderStatus;
+import jpabook.model.entity.item.Movie;
+import jpabook.model.enums.DeliveryStatus;
+import jpabook.model.enums.OrderStatus;
 
 public class Main {
 	public static void main(String[] args) {
@@ -36,32 +37,32 @@ public class Main {
 			em.persist(category2);
 			em.persist(category3);
 			
-			Item item = Item.builder().name("Bass Guitar").price(3000).stockQuantity(5).build();
+			Movie item = Movie.builder().name("타이타닉").price(10000).stockQuantity(100).director("제임스 카메룬").actor("디카프리오").build();
 			item.addCategory(category1);
 			em.persist(item);
 			
-			Member member = Member.builder().name("Lim Min Seok").city("Toronto").street("Finch").zipcode("12345").build();
+			Member member = Member.builder().name("Lim Min Seok").address(Address.builder().city("Toronto").street("Finch").zipcode("12345").build()).build();
 			em.persist(member);
 			
-			Delivery delivery = Delivery.builder().city("서울").status(DeliveryStatus.READY).street("봉은사로").zipcode("Z1231").build();
-			em.persist(delivery);
+			Delivery delivery = Delivery.builder().address(Address.builder().city("서울").street("봉은사로").zipcode("Z1231").build()).status(DeliveryStatus.READY).build();
+			
+			OrderItem orderItem = OrderItem.builder().item(item).orderPrice(6000).count(2).build();
+			orderItem.setItem(item);
 			
 			Order order = Order.builder().orderDate(new Date()).status(OrderStatus.ORDER).build();
 			order.setMember(member);
 			order.setDelivery(delivery);
+			order.addOrderItem(orderItem);
 			em.persist(order);
-			
-			OrderItem orderItem = OrderItem.builder().item(item).orderPrice(6000).count(2).build();
-			orderItem.setItem(item);
-			orderItem.setOrder(order);
-			em.persist(orderItem);
 			
 			Order o = em.find(Order.class, 1L);
 			Member m = o.getMember();
 			
 			print(m);
-			print("OrderDate : " + m.getOrders().get(0).getDelivery().getCity());
+			print("OrderDate : " + m.getOrders().get(0).getDelivery().getAddress().getCity());
 			print(o.getOrderItems().get(0).getItem().getCategories().get(0).getParent().getName());
+			print(member == m);
+			print(((Movie) m.getOrders().get(0).getOrderItems().get(0).getItem()).getActor());
 			
 			tx.commit();
 		} catch (Exception e) {

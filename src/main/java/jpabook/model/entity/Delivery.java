@@ -1,6 +1,7 @@
 package jpabook.model.entity;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -9,14 +10,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
+import jpabook.model.enums.DeliveryStatus;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
-public class Delivery {
+@NoArgsConstructor
+public class Delivery extends BaseEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,11 +30,8 @@ public class Delivery {
 	@OneToOne(mappedBy = "delivery")
 	private Order order;
 	
-	private String city;
-	
-	private String street;
-	
-	private String zipcode;
+	@Embedded
+	private Address address;
 	
 	@Enumerated(EnumType.STRING)
 	private DeliveryStatus status;
@@ -44,10 +45,8 @@ public class Delivery {
 	}
 
 	@Builder
-	public Delivery(String city, String street, String zipcode, DeliveryStatus status) {
-		this.city = city;
-		this.street = street;
-		this.zipcode = zipcode;
+	public Delivery(Address address, DeliveryStatus status) {
+		this.address = address;
 		this.status = status;
 	}
 }
