@@ -1,4 +1,4 @@
-package jpabook.model;
+package jpabook.model.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Product {
+public class Product extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

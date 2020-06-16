@@ -1,4 +1,4 @@
-package jpabook.model;
+package jpabook.model.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Member {
+public class Member extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,5 +44,10 @@ public class Member {
 		if(team != null) {
 			team.getMembers().add(this);
 		}
+	}
+
+	@Override
+	public String toString() {
+		return "Member [id=" + id + ", username=" + username + ", age=" + age + ", team=" + team + "]";
 	}
 }

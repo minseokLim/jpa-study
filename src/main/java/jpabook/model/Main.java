@@ -1,38 +1,42 @@
-package jpabook;
+package jpabook.model;
 
-import java.util.List;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import javax.persistence.TypedQuery;
 
-import jpabook.model.Address;
-import jpabook.model.Member;
-import jpabook.model.Order;
-import jpabook.model.Product;
-import jpabook.model.Team;
+import com.querydsl.jpa.impl.JPAQuery;
+
+import jpabook.model.entity.Address;
+import jpabook.model.entity.Member;
+import jpabook.model.entity.Order;
+import jpabook.model.entity.Product;
+import jpabook.model.entity.Team;
+import jpabook.model.entity.item.Album;
+import jpabook.model.entity.item.Book;
+import jpabook.model.entity.item.Item;
+import jpabook.model.entity.item.Movie;
+import jpabook.model.entity.item.QItem;
+
+import static jpabook.model.entity.item.QItem.item;
 
 public class Main {
 	public static void main(String[] args) {
-		
 		EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpabook");
 		EntityManager em = emf.createEntityManager();
 		EntityTransaction tx = em.getTransaction();
 		
 		try {
 			tx.begin();
-			
 			init(em);
 			
-			TypedQuery<Member> query = em.createQuery("SELECT m FROM Member m", Member.class);
+			JPAQuery<Item> query = new JPAQuery<Item>(em);
+			QItem itemSub = new QItem("itemSub");
 			
-			List<Member> resultList = query.getResultList();
-			
-			for(Member member : resultList) {
-				System.out.println("member = " + member);
-			}
+			query.from(item).where(item.price.lt(new JPAQuery<>(em).from(itemSub).))
 			
 			tx.commit();
 		} catch (Exception e) {
@@ -45,6 +49,10 @@ public class Main {
 		emf.close();
 	}
 	
+	private static void printArr(Object[] arr) {
+		System.out.println(String.join(", ", Arrays.stream(arr).map(String::valueOf).collect(Collectors.toList())));
+	}
+	
 	private static void init(EntityManager em) {
 		
 		Team team1 = Team.builder().name("1팀").build();
@@ -53,8 +61,8 @@ public class Main {
 		em.persist(team2);
 		
 		Member member1 = Member.builder().username("임민석").age(34).team(team2).build();
-		Member member2 = Member.builder().username("홍길동").age(20).build();
-		Member member3 = Member.builder().username("우수아").age(35).team(team2).build();
+		Member member2 = Member.builder().username("홍길동").age(25).build();
+		Member member3 = Member.builder().username("우수아").age(34).team(team2).build();
 		Member member4 = Member.builder().username("원빈").age(39).build();
 		Member member5 = Member.builder().username("박지성").age(40).team(team1).build();
 		em.persist(member1);
@@ -76,9 +84,16 @@ public class Main {
 		
 		Order order1 = Order.builder().orderAmount(1).address(address1).member(member1).product(product1).build();
 		Order order2 = Order.builder().orderAmount(1).address(address2).member(member3).product(product2).build();
-		Order order3 = Order.builder().orderAmount(5).address(address3).member(member5).product(product3).build();
+		Order order3 = Order.builder().orderAmount(10).address(address3).member(member5).product(product3).build();
 		em.persist(order1);
 		em.persist(order2);
 		em.persist(order3);
+		
+		Item item1 = Movie.builder().name("영화").price(50000).stockQuantity(10).director("감독").actor("배우").build();
+		Item item2 = Book.builder().name("책").price(4000).stockQuantity(15).author("저자").isbn("isbn").build();
+		Item item3 = Album.builder().name("앨범").price(10000).stockQuantity(200).artist("아티스트").etc("기타사항").build();
+		em.persist(item1);
+		em.persist(item2);
+		em.persist(item3);
 	}
 }

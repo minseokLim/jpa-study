@@ -1,4 +1,4 @@
-package jpabook.model;
+package jpabook.model.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Order {
+@Table(name = "ORDERS")
+public class Order extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,4 +1,4 @@
-package jpabook.model;
+package jpabook.model.entity;
 
 import javax.persistence.Embeddable;
 
@@ -22,5 +22,10 @@ public class Address {
 		this.city = city;
 		this.street = street;
 		this.zipcode = zipcode;
+	}
+
+	@Override
+	public String toString() {
+		return "Address [city=" + city + ", street=" + street + ", zipcode=" + zipcode + "]";
 	}
 }
