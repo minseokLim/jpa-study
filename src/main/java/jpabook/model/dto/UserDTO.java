@@ -1,5 +1,7 @@
 package jpabook.model.dto;
 
+import com.querydsl.core.annotations.QueryProjection;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,6 +12,7 @@ public class UserDTO {
 	
 	private int age;
 
+	@QueryProjection
 	@Builder
 	public UserDTO(String username, int age) {
 		this.username = username;

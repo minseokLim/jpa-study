@@ -1,5 +1,8 @@
 package jpabook.model;
 
+import static jpabook.model.entity.QMember.member;
+import static jpabook.model.entity.QTeam.team;
+
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -10,6 +13,7 @@ import javax.persistence.Persistence;
 
 import com.querydsl.jpa.impl.JPAQuery;
 
+import jpabook.model.dto.QUserDTO;
 import jpabook.model.entity.Address;
 import jpabook.model.entity.Member;
 import jpabook.model.entity.Order;
@@ -19,9 +23,6 @@ import jpabook.model.entity.item.Album;
 import jpabook.model.entity.item.Book;
 import jpabook.model.entity.item.Item;
 import jpabook.model.entity.item.Movie;
-import jpabook.model.entity.item.QItem;
-
-import static jpabook.model.entity.item.QItem.item;
 
 public class Main {
 	public static void main(String[] args) {
@@ -33,10 +34,9 @@ public class Main {
 			tx.begin();
 			init(em);
 			
-			JPAQuery<Item> query = new JPAQuery<Item>(em);
-			QItem itemSub = new QItem("itemSub");
+			JPAQuery<Member> query = new JPAQuery<Member>(em);
 			
-			query.from(item).where(item.price.lt(new JPAQuery<>(em).from(itemSub).))
+			query.select(team, member.age.sum()).from(member).leftJoin(member.team, team).groupBy(member.team).fetch().stream().forEach(System.out::println);;
 			
 			tx.commit();
 		} catch (Exception e) {
